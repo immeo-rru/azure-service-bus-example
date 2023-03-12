@@ -10,6 +10,8 @@ namespace ServiceBus.Producer.Services
         Task Publish(string raw);
 
         Task Publish<T>(T obj);
+
+        Task QueueText(string raw);
     }
 
     public class MessagePublisher : IMessagePublisher
@@ -28,9 +30,8 @@ namespace ServiceBus.Producer.Services
         {
             var message = new ServiceBusMessage(raw);
             message.ApplicationProperties["messageType"] = "Raw";
-            var sender = _serviceBusClient.CreateSender(_serviceBusSettings.TopicName);
+            var sender = _serviceBusClient.CreateSender(_serviceBusSettings.Topic.TopicName);
             await sender.SendMessageAsync(message);
-            return;
         }
 
         public async Task Publish<T>(T obj)
@@ -38,9 +39,16 @@ namespace ServiceBus.Producer.Services
             var objAsText = JsonSerializer.Serialize(obj);
             var message = new ServiceBusMessage(objAsText);
             message.ApplicationProperties["messageType"] = typeof(T).Name;
-            var sender = _serviceBusClient.CreateSender(_serviceBusSettings.TopicName);
+            var sender = _serviceBusClient.CreateSender(_serviceBusSettings.Topic.TopicName);
             await sender.SendMessageAsync(message);
-            return;
+        }
+
+        public async Task QueueText(string raw)
+        {
+            var message = new ServiceBusMessage(raw);
+            //message.ApplicationProperties["messageType"] = "Raw";
+            var sender = _serviceBusClient.CreateSender(_serviceBusSettings.Queue.QueueName);
+            await sender.SendMessageAsync(message);
         }
     }
 }

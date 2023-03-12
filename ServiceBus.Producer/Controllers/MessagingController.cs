@@ -15,6 +15,16 @@ namespace ServiceBus.Producer.Controllers
             _messagePublisher = messagePublisher;
         }
 
+        [HttpPost("publish/queuetext")]
+        public async Task<IActionResult> PublishQueueText()
+        {
+            using var reader = new StreamReader(Request.Body);
+            var message = await reader.ReadToEndAsync();
+            await _messagePublisher.QueueText(!string.IsNullOrEmpty(message) ? message : "Hello from PublishQueueText: " + DateTime.UtcNow.ToString());
+            return Ok();
+        }
+
+
         [HttpPost("publish/text")]
         public async Task<IActionResult> PublishText()
         {

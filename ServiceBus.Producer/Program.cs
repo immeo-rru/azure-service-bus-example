@@ -13,7 +13,6 @@ builder.Services.AddSwaggerGen();
 
 var serviceBusSettings = builder.Configuration.GetSection(ServiceBusSettings.Section);
 builder.Services.Configure<ServiceBusSettings>(serviceBusSettings);
-//builder.Services.AddSingleton(serviceBusSettings);
 
 builder.Services.AddSingleton<IMessagePublisher, MessagePublisher>();
 
